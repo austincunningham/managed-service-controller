@@ -1,4 +1,4 @@
-kind: Role
+kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: managed-services-controller
@@ -30,17 +30,59 @@ rules:
   - statefulsets
   verbs:
   - "*"
-
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - "create"
+  - "delete"
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles
+  - rolebindings
+  verbs:
+  - "create"
 ---
 
-kind: RoleBinding
+kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
   name: default-account-managed-services-controller
 subjects:
 - kind: ServiceAccount
   name: default
+  namespace: managed-services-admin
 roleRef:
-  kind: Role
+  kind: ClusterRole
   name: managed-services-controller
   apiGroup: rbac.authorization.k8s.io
+
+---
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: integreatly-create-installplan
+rules:
+- apiGroups:
+  - operators.coreos.com
+  resources:
+  - "installplans"
+  verbs:
+  - "create"
+---
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  generateName: managed-services-controller-create-installplan-
+roleRef:
+  kind: ClusterRole
+  name: integreatly-create-installplan
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: managed-services-admin

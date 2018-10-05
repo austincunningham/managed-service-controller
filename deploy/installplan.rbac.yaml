@@ -1,0 +1,25 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: integreatly-create-installplan
+rules:
+- apiGroups:
+  - operators.coreos.com
+  resources:
+  - "installplans"
+  verbs:
+  - "create"
+---
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  generateName: managed-services-controller-create-installplan-
+roleRef:
+  kind: ClusterRole
+  name: integreatly-create-installplan
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: managed-services-admin
